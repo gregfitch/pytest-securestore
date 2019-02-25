@@ -1,0 +1,10 @@
+site_name: pytest-securestore
+site_description: An encrypted password store for use within pytest cases
+site_author: Greg Fitch
+
+theme: readthedocs
+
+repo_url: https://github.com/gregfitch/pytest-securestore
+
+pages:
+- Home: index.md
