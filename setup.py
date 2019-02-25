@@ -33,7 +33,7 @@ setup(
     long_description=read('README.rst'),
     py_modules=['pytest_securestore'],
     python_requires='!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
-    install_requires=reqs,
+    install_requires=['PyYAML>=3.13', 'pyAesCrypt>=0.4.2', 'tox>=3.7.0'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Framework :: Pytest',
