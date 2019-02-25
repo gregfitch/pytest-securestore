@@ -19,7 +19,7 @@ def test_secure_store_fixture(testdir, tmpdir):
     """Make sure that pytest accepts the store fixture."""
     # create a temporary, encrypted data file from YML_FILE
     file = tmpdir.join('encrypt.test')
-    with open(file, "wb") as encrypt_test:
+    with open(str(file), "wb") as encrypt_test:
         stream = BytesIO(YML_FILE)
         encryptStream(stream, encrypt_test, GENERIC_PASSWORD, BUFFER_SIZE)
 

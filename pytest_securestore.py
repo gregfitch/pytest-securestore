@@ -49,7 +49,7 @@ def store(request):
     buffer_size = 64 * 1024  # 64K decryption buffer
 
     # Read in the encrypted, binary file
-    with open(file, "rb") as store_in:
+    with open(str(file), "rb") as store_in:
         lines = b''
         for line in store_in.readlines():
             lines = lines + line
