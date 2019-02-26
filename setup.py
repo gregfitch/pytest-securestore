@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name='pytest-securestore',
-    version='0.1.1',
+    version='0.1.2',
     author='Greg Fitch',
     author_email='greg@openstax.org',
     maintainer='Greg Fitch',
@@ -24,7 +24,10 @@ setup(
     long_description=read('README.rst'),
     py_modules=['pytest_securestore'],
     python_requires='!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
-    install_requires=['pytest>=3.7.0'],
+    install_requires=[
+        'pytest>=3.7.0',
+        'PyYAML>=3.13',
+        'pyAesCrypt>=0.4.2', ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Framework :: Pytest',
@@ -32,12 +35,9 @@ setup(
         'Topic :: Software Development :: Testing',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
         'Operating System :: OS Independent',
         'License :: OSI Approved :: MIT License',
     ],
