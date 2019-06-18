@@ -65,7 +65,7 @@ Encrypt the YAML file (`file encryption`_):
     buffer_size = 64 * 1024  # 64K
     filename = os.getenv('SECURE_STORE_FILE')
     password = os.getenv('SECURE_STORE_PASSWORD')
-    py.AesCrypt.encryptFile("/path/to/yaml/file", filename, password, buffer_size)
+    pyAesCrypt.encryptFile("/path/to/yaml/file", filename, password, buffer_size)
 
 Include the encrypted file in the repository.
 
@@ -88,12 +88,6 @@ And to kick it off:
 
 CLI with environment variables:
     $ pytest --secure-store-filename=$SECURE_STORE_FILE --secure-store-password=$SECURE_STORE_PASSWORD
-
-INI:
-::
-    [pytest]
-    secure_store_filename = /path/to/encrypted/store/filename
-    secure_store_password = password  # don't commit an INI with your real password to a public repo!
 
 Contributing
 ------------
