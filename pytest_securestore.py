@@ -44,12 +44,12 @@ def pytest_addoption(parser):
 @pytest.fixture(scope="module")
 def store(request):
     """Decrypt a YAML file and return a value dictionary."""
-    password = request.config.option.secure_store_password
-    if not password:
-        password = request.config.getini('secure_store_filename')
     file = request.config.option.secure_store_filename
     if not file:
-        file = request.config.getini('secure_store_password')
+        file = request.config.getini('secure_store_filename')
+    password = request.config.option.secure_store_password
+    if not password:
+        password = request.config.getini('secure_store_password')
     buffer_size = 64 * 1024  # 64K decryption buffer
 
     # Read in the encrypted, binary file
