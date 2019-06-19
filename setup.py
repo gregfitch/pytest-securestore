@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name='pytest-securestore',
-    version='0.1.2',
+    version='0.1.3',
     author='Greg Fitch',
     author_email='greg@openstax.org',
     maintainer='Greg Fitch',

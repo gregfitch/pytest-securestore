@@ -2,17 +2,17 @@
 
 from io import BytesIO
 from pyAesCrypt import encryptStream
-from yaml import load as load_yaml
+from yaml import safe_load as load_yaml
 
 BUFFER_SIZE = 64 * 1024  # suggested 64K for the encryption buffer
 PLUGIN_NAME = "securestore"
 GENERIC_PASSWORD = "BAD_password!"
-YML_FILE = """---
+YML_FILE = f"""---
 # a comment
 general_user:
-    username: {username}
-    password: {password}
-...""".format(username=PLUGIN_NAME, password=GENERIC_PASSWORD).encode("utf-8")
+    username: {PLUGIN_NAME}
+    password: {GENERIC_PASSWORD}
+...""".encode("utf-8")
 
 
 def test_secure_store_fixture(testdir, tmpdir):
@@ -27,13 +27,13 @@ def test_secure_store_fixture(testdir, tmpdir):
     testdir.makepyfile(
         "\n" +
         "    def test_seek(store):\n" +
-        "        assert store == {}\n".format(load_yaml(YML_FILE))
+        f"        assert store == {load_yaml(YML_FILE)}\n"
     )
 
     # run pytest with the following CL args
     result = testdir.runpytest(
-        '--secure-store-password={}'.format(GENERIC_PASSWORD),
-        "--secure-store-filename={}".format(file),
+        f'--secure-store-password={GENERIC_PASSWORD}',
+        f"--secure-store-filename={file}",
         "-s",
         "-v"
     )
@@ -66,13 +66,13 @@ def test_help_message(testdir):
 
 def test_secure_storage_setting(testdir):
     """Test the INI configuration loads."""
-    testdir.makeini("""
+    testdir.makeini(f"""
         [pytest]
-        secure_store_filename = {file}
-        secure_store_password = {password}
-    """.format(file=PLUGIN_NAME, password=GENERIC_PASSWORD))
+        secure_store_filename = {PLUGIN_NAME}
+        secure_store_password = {GENERIC_PASSWORD}
+    """)
 
-    testdir.makepyfile("""
+    testdir.makepyfile(f"""
         import pytest
 
         @pytest.fixture
@@ -81,8 +81,8 @@ def test_secure_storage_setting(testdir):
                     request.config.getini('secure_store_password')]
 
         def test_secure_storage_ini_settings(store):
-            assert store == ['{file}', '{password}']
-    """.format(file=PLUGIN_NAME, password=GENERIC_PASSWORD))
+            assert store == ['{PLUGIN_NAME}', '{GENERIC_PASSWORD}']
+    """)
 
     result = testdir.runpytest('-v')
 

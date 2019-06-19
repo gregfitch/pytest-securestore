@@ -5,7 +5,7 @@ from os import getenv
 
 import pytest
 from pyAesCrypt import decryptStream as decrypt
-from yaml import load as load_yaml
+from yaml import safe_load as load_yaml
 
 
 __all__ = ["store"]
@@ -25,7 +25,7 @@ def pytest_addoption(parser):
         "--secure-store-filename",
         action="store",
         dest="secure_store_filename",
-        default=getenv("SECURE_STORE_FILE", None),
+        default=getenv("SECURE_STORE_FILENAME", None),
         help="Set the secure storage path and filename."
     )
 
@@ -37,7 +37,7 @@ def pytest_addoption(parser):
     parser.addini(
         name="secure_store_filename",
         help="Set the secure storage path and filename.",
-        default=getenv("SECURE_STORE_FILE", None)
+        default=getenv("SECURE_STORE_FILENAME", None)
     )
 
 
@@ -45,7 +45,11 @@ def pytest_addoption(parser):
 def store(request):
     """Decrypt a YAML file and return a value dictionary."""
     password = request.config.option.secure_store_password
+    if not password:
+        password = request.config.getini('secure_store_filename')
     file = request.config.option.secure_store_filename
+    if not file:
+        file = request.config.getini('secure_store_password')
     buffer_size = 64 * 1024  # 64K decryption buffer
 
     # Read in the encrypted, binary file
