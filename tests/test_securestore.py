@@ -2,17 +2,17 @@
 
 from io import BytesIO
 from pyAesCrypt import encryptStream
-from yaml import load as load_yaml
+from yaml import safe_load as load_yaml
 
 BUFFER_SIZE = 64 * 1024  # suggested 64K for the encryption buffer
 PLUGIN_NAME = "securestore"
 GENERIC_PASSWORD = "BAD_password!"
-YML_FILE = """---
+YML_FILE = f"""---
 # a comment
 general_user:
-    username: {username}
-    password: {password}
-...""".format(username=PLUGIN_NAME, password=GENERIC_PASSWORD).encode("utf-8")
+    username: {PLUGIN_NAME}
+    password: {GENERIC_PASSWORD}
+...""".encode("utf-8")
 
 
 def test_secure_store_fixture(testdir, tmpdir):
@@ -27,13 +27,13 @@ def test_secure_store_fixture(testdir, tmpdir):
     testdir.makepyfile(
         "\n" +
         "    def test_seek(store):\n" +
-        "        assert store == {}\n".format(load_yaml(YML_FILE))
+        f"        assert store == {load_yaml(YML_FILE)}\n"
     )
 
     # run pytest with the following CL args
     result = testdir.runpytest(
-        '--secure-store-password={}'.format(GENERIC_PASSWORD),
-        "--secure-store-filename={}".format(file),
+        f'--secure-store-password={GENERIC_PASSWORD}',
+        f"--secure-store-filename={file}",
         "-s",
         "-v"
     )
@@ -64,31 +64,70 @@ def test_help_message(testdir):
     assert result.ret == 0
 
 
-def test_secure_storage_setting(testdir):
-    """Test the INI configuration loads."""
-    testdir.makeini("""
+def test_secure_storage_setting_and_failover(testdir):
+    """Test the INI configuration loads after trying the CLI."""
+    CLI_FILE = "cli_file_path"
+    CLI_PASS = "cli_password"
+    testdir.makeini(f"""
         [pytest]
-        secure_store_filename = {file}
-        secure_store_password = {password}
-    """.format(file=PLUGIN_NAME, password=GENERIC_PASSWORD))
+        secure_store_filename = {PLUGIN_NAME}
+        secure_store_password = {GENERIC_PASSWORD}
+    """)
 
-    testdir.makepyfile("""
+    testdir.makepyfile(f"""
         import pytest
 
         @pytest.fixture
         def store(request):
-            return [request.config.getini('secure_store_filename'),
-                    request.config.getini('secure_store_password')]
+            password = request.config.option.secure_store_password
+            if not password:
+                password = request.config.getini('secure_store_filename')
+            file = request.config.option.secure_store_filename
+            if not file:
+                file = request.config.getini('secure_store_password')
+            return [file, password]
 
         def test_secure_storage_ini_settings(store):
-            assert store == ['{file}', '{password}']
-    """.format(file=PLUGIN_NAME, password=GENERIC_PASSWORD))
+            assert store == ['{CLI_FILE}', '{CLI_PASS}']
+    """)
 
-    result = testdir.runpytest('-v')
+    result = testdir.runpytest(
+        f"--secure-store-filename={CLI_FILE}",
+        f"--secure-store-password={CLI_PASS}",
+        "-s",
+        "-v"
+    )
 
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines([
         '*::test_secure_storage_ini_settings PASSED*',
+    ])
+
+    testdir.makepyfile(f"""
+        import pytest
+
+        @pytest.fixture
+        def store(request):
+            file = request.config.option.secure_store_filename
+            if not file:
+                file = request.config.getini('secure_store_filename')
+            password = request.config.option.secure_store_password
+            if not password:
+                password = request.config.getini('secure_store_password')
+            return [file, password]
+
+        def test_secure_storage_ini_failover_settings(store):
+            assert store == ['{PLUGIN_NAME}', '{GENERIC_PASSWORD}']
+    """)
+
+    result = testdir.runpytest(
+        "-s",
+        "-v"
+    )
+
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines([
+        '*::test_secure_storage_ini_failover_settings PASSED*',
     ])
 
     # make sure that that we get a '0' exit code for the testsuite
