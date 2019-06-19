@@ -48,20 +48,24 @@ Usage
 -----
 
 Generic YAML layout:
-::
+
+.. code-block:: yaml
+
     ---
     # a comment
     a_general_user:
         username: the_username
         password: a_password
         usertype: some_defined_type
-    ... 
+    ...
 
 Encrypt the YAML file (`file encryption`_):
-::
+
+.. code-block:: yaml
+
     import os
     import pyAesCrypt
-    
+
     buffer_size = 64 * 1024  # 64K
     filename = os.getenv('SECURE_STORE_FILE')
     password = os.getenv('SECURE_STORE_PASSWORD')
@@ -70,7 +74,9 @@ Encrypt the YAML file (`file encryption`_):
 Include the encrypted file in the repository.
 
 Within a test:
-::
+
+.. code-block:: yaml
+
     def test_get_store_values(store):
         # one way to get the value
         user = store.get('a_general_user')
@@ -87,6 +93,9 @@ Within a test:
 And to kick it off:
 
 CLI with environment variables:
+
+.. code-block:: bash
+
     $ pytest --secure-store-filename=$SECURE_STORE_FILE --secure-store-password=$SECURE_STORE_PASSWORD
 
 Contributing
