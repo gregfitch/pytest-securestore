@@ -41,6 +41,43 @@ def pytest_addoption(parser):
     )
 
 
+class Secret:
+    def __init__(self, value):
+        self.set_value(value)
+
+    def __repr__(self):
+        return "Secret(********)"
+
+    def __str__(self):
+        return "********"
+
+    def __eq__(self, other_value):
+        if not isinstance(other_value, str):
+            return NotImplemented
+        return self._value == other_value
+
+    def get_value(self):
+        return self._value
+
+    def set_value(self, value):
+        self._value = value
+
+    def del_value(self):
+        del self._value
+
+    value = property(get_value, set_value, del_value)
+
+
+def replace_item(obj, key):
+    """Replace a specific key with a Secret value, recursively."""
+    for k, value in obj.items():
+        if isinstance(value, dict):
+            obj[k] = replace_item(value, key)
+    if key in obj:
+        obj[key] = Secret(obj[key])
+    return obj
+
+
 @pytest.fixture(scope="module")
 def store(request):
     """Decrypt a YAML file and return a value dictionary."""
@@ -64,4 +101,5 @@ def store(request):
     decrypted = BytesIO()
     encrypted.seek(0)
     decrypt(encrypted, decrypted, password, buffer_size, stream_length)
-    return load_yaml(decrypted.getvalue().decode("utf-8"))
+    temp_obj = load_yaml(decrypted.getvalue().decode("utf-8"))
+    return replace_item(temp_obj, 'password')
