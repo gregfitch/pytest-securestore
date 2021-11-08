@@ -1,0 +1,30 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"backports.entry-points-selectable" = "==1.1.0"
+cffi = "==1.15.0"
+cryptography = "==35.0.0"
+distlib = "==0.3.3"
+filelock = "==3.3.2"
+platformdirs = "==2.4.0"
+pluggy = "==1.0.0"
+py = "==1.11.0"
+pycparser = "==2.21"
+pyparsing = "==2.4.7"
+six = "==1.16.0"
+toml = "==0.10.2"
+tox = "==3.24.4"
+virtualenv = "==20.10.0"
+pyAesCrypt = "==6.0.0"
+PyYAML = "==6.0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
+
+[scripts]
+test = "tox"
