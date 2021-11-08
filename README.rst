@@ -74,6 +74,8 @@ Encrypt the YAML file (`file encryption`_):
 Include the encrypted file in the repository.
 
 Within a test:
+*Note: A ``'password'`` key triggers an internal class ``Secret`` to obscure
+passwords stored in the yaml. Use ``.value`` to get the plain text back.*
 
 .. code-block:: yaml
 
@@ -84,7 +86,7 @@ Within a test:
         # or another
         username = store.get('a_general_user').get('username')
         # or even another
-        password = store.get('a_general_user')['password']
+        password = store.get('a_general_user')['password'].value
         # or
         user_type = store['a_general_user']['usertype']
         # ...
