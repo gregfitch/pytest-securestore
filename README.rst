@@ -74,8 +74,9 @@ Encrypt the YAML file (`file encryption`_):
 Include the encrypted file in the repository.
 
 Within a test:
-*Note: A ``'password'`` key triggers an internal class ``Secret`` to obscure
-passwords stored in the yaml. Use ``.value`` to get the plain text back.*
+
+Note: A ``password`` key triggers an internal class ``Secret`` to obscure
+passwords stored in the yaml. Use ``.value`` to get the plain text back.
 
 .. code-block:: yaml
 
